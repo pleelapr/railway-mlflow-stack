@@ -74,6 +74,8 @@ services:
       # Railway will provide these credentials, or use defaults for local dev
       AUTH_USERNAME: ${AUTH_USERNAME:-admin}
       AUTH_PASSWORD: ${AUTH_PASSWORD:-changeme}
+      MLFLOW_HOST: mlflow
+      MLFLOW_PORT: 5000
       # Optional OAuth2 configuration (commented out by default)
       # OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
       # OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}

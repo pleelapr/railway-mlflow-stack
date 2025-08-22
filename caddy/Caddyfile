@@ -2,12 +2,12 @@
 	admin off
 }
 
-localhost:{$PORT} {
+http://localhost:{$PORT} {
 	# Import generated basic auth configuration
 	import /etc/caddy/generated/auth.caddy
 
 	# Proxy all authenticated requests to MLFlow
-	reverse_proxy mlflow:5000 {
+	reverse_proxy http://{$MLFLOW_HOST}:{$MLFLOW_PORT} {
 		# Preserve original headers
 		header_up Host {upstream_hostport}
 		header_up X-Forwarded-Proto https
@@ -56,5 +56,5 @@ localhost:{$PORT} {
 #         }
 #     }
 #     
-#     reverse_proxy mlflow:5000
+#     reverse_proxy {$MLFLOW_HOST}:{$MLFLOW_PORT}
 # }
