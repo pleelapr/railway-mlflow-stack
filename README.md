@@ -1,6 +1,6 @@
 # Deploy and Host MLflow on Railway
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/SOMETHING)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/mlflow?referralCode=IFlm92&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 MLflow is the open-source standard for managing the machine learning lifecycle. It handles experiment tracking, model packaging, and deployment with a mix of online services and local Python tooling. By standardizing workflows across tools and frameworks, MLflow makes collaboration, reproducibility, and scaling ML systems easier in both research and production environments.
 
