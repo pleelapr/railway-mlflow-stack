@@ -1,0 +1,17 @@
+FROM caddy:alpine
+
+# Install apache2-utils for htpasswd (bcrypt password hashing)
+RUN apk add --no-cache apache2-utils
+
+# Copy configuration files
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY startup.sh /scripts/startup.sh
+
+# Make startup script executable
+RUN chmod +x /scripts/startup.sh
+
+# Create directory for generated configs
+RUN mkdir -p /etc/caddy/generated
+
+# Use startup script as entrypoint
+ENTRYPOINT ["/scripts/startup.sh"]
