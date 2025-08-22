@@ -12,7 +12,7 @@
 	import /etc/caddy/generated/auth.caddy
 
 	# Proxy all authenticated requests to MLFlow
-	reverse_proxy {$MLFLOW_HOST}::{$MLFLOW_PORT} {
+	reverse_proxy {$MLFLOW_HOST}:{$MLFLOW_PORT} {
 		# Preserve original headers
 		header_up Host {upstream_hostport}
 		header_up X-Forwarded-Proto https
