@@ -81,7 +81,7 @@ services:
       # OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
       # OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
     healthcheck:
-      test: ["CMD", "caddy", "version"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
