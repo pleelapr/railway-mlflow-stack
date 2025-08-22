@@ -1,135 +1,98 @@
-# Deploy and Host MLFlow on Railway
+# Deploy and Host MLflow on Railway
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/railway-mlflow-stack)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/SOMETHING)
 
-MLFlow is an open-source platform for machine learning experiment tracking, model management, and deployment. This template can be used for anything the MLFlow tracking server supports, following MLFlow's [best deployment practices](https://mlflow.org/docs/latest/ml/tracking/tutorials/remote-server/). For model serving, test locally using their [deployment guide](https://mlflow.org/docs/latest/ml/deployment/deploy-model-locally/) then build and push Docker images to Railway as described in their [Kubernetes deployment docs](https://mlflow.org/docs/latest/ml/deployment/deploy-model-to-kubernetes/#build-docker-for-deployment).
+MLflow is the open-source standard for managing the machine learning lifecycle. It handles experiment tracking, model packaging, and deployment with a mix of online services and local Python tooling. By standardizing workflows across tools and frameworks, MLflow makes collaboration, reproducibility, and scaling ML systems easier in both research and production environments.
 
-## About Hosting MLFlow
+## About Hosting MLflow
 
-Hosting MLFlow typically requires configuring multiple services: a tracking server, database backend, artifact storage, and authentication layer. This template eliminates setup complexity by providing a one-click deploy solution with everything pre-configured. You get a production-ready MLFlow instance with PostgreSQL backend, S3-compatible MinIO storage, and secure Caddy authentication gateway - all automatically deployed and connected on Railway's infrastructure.
+This template provides MLflow preconfigured with:
+
+- **Caddy** for authentication and reverse proxying
+- **MinIO** for artifact storage
+- **PostgreSQL** for backend storage
+
+all deployable in a single click on Railway1
+
+Once the services are healthy, configure your local environment with the Railway-generated username and password, and you’re ready to build production-ready ML/AI systems.
+
+This template is based on MLflow’s guide for [Remote Experiment Tracking with MLflow Tracking Server](https://mlflow.org/docs/latest/ml/tracking/tutorials/remote-server/), which outlines how to remotely access the MLflow artifact store, backend store, and shared tracking server; overall making collaboration across your ML/AI teams seamless.
 
 ## Common Use Cases
 
-- **ML Experiment Management** - Track and compare machine learning experiments across teams
-- **Model Versioning** - Manage model lifecycles from development to production
-- **Collaborative ML** - Share experiments and models across data science teams
-- **MLOps Pipelines** - Integrate with CI/CD for automated model deployment
+This template enables a comprehensive set of MLOps usecases:
 
-## Dependencies
+- **Track and compare experiments**: Log parameters, metrics, and outputs from every training run. Quickly compare results to see which models perform best and why.
+- **Centralized artifact storage**: Store models, plots, logs, and other outputs in MinIO, making them easy to retrieve, share, and keep organized.
+- **Manage model lifecycles**: Use the model registry to version, annotate, and promote models from experimentation through staging and into production.
+- **Keep data reproducible**: Record dataset versions or URIs so you always know exactly which data was used to train a model—even if the raw data itself lives elsewhere.
+- **Package models for reuse**: Automatically capture dependencies and package models into portable formats like Docker images or Conda environments, ensuring consistent results everywhere.
+- **Deploy models with ease**: Serve trained models locally or via Docker containers that you can push up to a registry, and deploy back to Railway!
 
-This template includes four containerized services:
+## Dependencies for MLflow Hosting
 
-- **MLFlow Server** - Experiment tracking and model registry
-- **PostgreSQL** - Backend database for metadata storage  
-- **MinIO** - S3-compatible object storage for artifacts
-- **Caddy** - Reverse proxy with authentication
+The Railway template includes all required dependencies:
 
-## Architecture
+- a Caddy HTTP Gateway / Reverse proxy that provides authentication and HTTP logging.
+- an MLflow "tracking" server that acts as a primary API connects everything together.
+- a PostgreSQL database which acts as an MLflow Backend Store.
+- a MinIO S3 compatible file store which acts as an MLflow Artifact Store.
 
-```mermaid
----
-config:
-  theme: nuetral
----
+### Deployment Dependencies
 
-graph TB
-    Client[Client/Browser] --> Caddy[Caddy Reverse Proxy<br/>Port 8080]
-    Caddy --> MLFlow[MLFlow Server<br/>Port 5000<br/>Internal Only]
-    MLFlow --> PostgreSQL[PostgreSQL Database<br/>Port 5432]
-    MLFlow --> MinIO[MinIO Object Storage<br/>Port 9000]
-    MinIO --> Console[MinIO Console<br/>Port 9001]
-    
-    subgraph "Authentication Layer"
-        Caddy
-    end
-    
-    subgraph "Application Layer"
-        MLFlow
-    end
-    
-    subgraph "Data Layer"
-        PostgreSQL
-        MinIO
-    end
-```
+The MLflow documentation is crucial for understanding how to best utilize all of the great tooling MLflow can provide. 
+Here are some links to get you started:
 
-## Implementation Details
+- [Getting started with ML](https://MLflow.org/docs/latest/ml/getting-started/): a getting started guide for MLOps on MLflow.
+- [Getting Started with GenAI](https://MLflow.org/docs/latest/genai/getting-started/): a getting started guide for LLMOps on MLflow.
+- [MLflow v3](https://MLflow.org/docs/latest/genai/MLflow-3): release notes for the latest major release of MLflow.
 
-### Authentication Strategy
+### Implementation Details
 
-MLFlow's built-in authentication is experimental and not recommended for production. This template uses **Caddy as an authentication gateway** to provide:
+#### Pinning MLflow versions
 
-- **Production-grade security** with bcrypt password hashing
-- **Automatic HTTPS** and SSL certificate management  
-- **Security headers** (XSS protection, HSTS, clickjacking prevention)
-- **Request logging** and rate limiting capabilities
+Just provide a `MLFLOW_VERSION` environment variable on the MLflow Service to pin a version! by default the template uses **v3.3.1**.
 
-Railway automatically generates secure credentials (`AUTH_USERNAME` and `AUTH_PASSWORD`) for your deployment.
+#### Authentication via Caddy
 
-### Service Configuration
+MLflow’s built-in authentication features are still experimental.
 
-| Service | Purpose | Port | Access |
-|---------|---------|------|--------|
-| Caddy | Authentication gateway | 80/443 | External (Railway domain) |
-| MLFlow | ML tracking server | 5000 | Internal only |
-| PostgreSQL | Metadata database | 5432 | Internal only |
-| MinIO | Object storage | 9000/9001 | Internal only (optional Console access) |
+To provide stability, this template uses **Caddy** as a reverse proxy with basic authentication. This follows MLflow’s best practices for production deployments and is fully supported by MLflow’s Python tooling.
 
-### Environment Variables
-
-Railway automatically configures these variables:
-
-- `AUTH_USERNAME` - Basic auth username (auto-generated)
-- `AUTH_PASSWORD` - Basic auth password (auto-generated)
-- `DB_URL` - PostgreSQL connection string
-- `MLFLOW_S3_ENDPOINT_URL` - MinIO endpoint for artifacts
-
-Optional OAuth2 configuration:
-
-- `OAUTH2_CLIENT_ID` - OAuth2 client ID
-- `OAUTH2_CLIENT_SECRET` - OAuth2 client secret
-
-you'll then need to fork this repository and edit the caddyfile to uncomment the OAUTH2 config.
-
-## Getting Started
-
-Once deployed, access your MLFlow instance at your Railway-provided URL using the auto-generated credentials.
-
-### Python Client Usage
-
-```python
-import mlflow
-
-# Set tracking URI to your Railway domain
-mlflow.set_tracking_uri("https://your-app.railway.app")
-
-# Track an experiment
-with mlflow.start_run():
-    mlflow.log_param("alpha", 0.5)
-    mlflow.log_metric("rmse", 0.8)
-    mlflow.sklearn.log_model(model, "model")
-```
-
-### Model Registry
-
-```python
-# Register a model
-mlflow.register_model("runs:/<run_id>/model", "MyModel")
-
-# Load a model
-model = mlflow.sklearn.load_model("models:/MyModel/1")
-```
-
-## Local Development
+To authenticate locally, export your Railway-generated credentials:
 
 ```bash
-git clone <repository-url>
-cd railway-mlflow-stack
-docker-compose up -d
+# set your credentials
+export MLFLOW_TRACKING_URI=https://your-mlflow-deployment.up.railway.app
+export MLFLOW_TRACKING_USERNAME=username
+export MLFLOW_TRACKING_PASSWORD=your-generated-password
+
+# any MLflow code will now pick them up
+python example.py
 ```
 
-Access locally at `http://localhost:8080` (admin/changeme)
+#### Extending the default MLflow Dockerfile
 
----
+The default MLflow Dockerfile ships with only the essentials.
 
-*This template was created for the [Railway MLFlow bounty](https://station.railway.com/questions/template-request-m-lflow-c7d942b1)*
+This template extends that image and applies MLflow’s recommended best practices, making the deployment both 1-click ready and extensible for your future needs.
+
+#### Deploying your MLflow trained models on Railway
+
+You can deploy trained MLflow models directly to Railway: 
+
+1. [Use MLflow to build a docker image from your trained model](https://mlflow.org/docs/latest/api_reference/cli.html#mlflow-models-build-docker).
+2. Push the image to your preferred container registry.
+3. Follow Railway's guide to deploy Docker images; [public](https://docs.railway.com/guides/services#deploying-a-public-docker-image) or [private](https://docs.railway.com/guides/services#deploying-a-private-docker-image).
+
+For more details check the [MLflow Serving docs](https://mlflow.org/docs/latest/ml/deployment/) and [their guide on deploying to Kubernetes](https://mlflow.org/docs/latest/ml/deployment/deploy-model-to-kubernetes/).
+
+_With a little bit of custom automation code, you could use this template as the core of an MLOps deployment pipeline!_
+
+## Why Deploy MLflow on Railway?
+
+Railway is a singular platform to deploy your infrastructure stack. Railway will host your infrastructure so you don't have to deal with configuration, while allowing you to vertically and horizontally scale it.
+
+By deploying MLflow on Railway, you are one step closer to supporting a complete full-stack application with minimal burden. Host your servers, databases, AI agents, and more on Railway.
+
+This setup is designed to be extensible. You can layer in CI/CD pipelines, automated model promotion, or connect it with orchestration tools like Airflow or Prefect.
