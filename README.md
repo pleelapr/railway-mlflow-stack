@@ -75,10 +75,10 @@ Railway automatically generates secure credentials (`AUTH_USERNAME` and `AUTH_PA
 
 | Service | Purpose | Port | Access |
 |---------|---------|------|--------|
-| Caddy | Authentication gateway | 8080 | External (Railway domain) |
+| Caddy | Authentication gateway | 80/443 | External (Railway domain) |
 | MLFlow | ML tracking server | 5000 | Internal only |
 | PostgreSQL | Metadata database | 5432 | Internal only |
-| MinIO | Object storage | 9000/9001 | Internal + Console |
+| MinIO | Object storage | 9000/9001 | Internal only (optional Console access) |
 
 ### Environment Variables
 
@@ -90,8 +90,11 @@ Railway automatically configures these variables:
 - `MLFLOW_S3_ENDPOINT_URL` - MinIO endpoint for artifacts
 
 Optional OAuth2 configuration:
+
 - `OAUTH2_CLIENT_ID` - OAuth2 client ID
 - `OAUTH2_CLIENT_SECRET` - OAuth2 client secret
+
+you'll then need to fork this repository and edit the caddyfile to uncomment the OAUTH2 config.
 
 ## Getting Started
 
