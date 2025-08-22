@@ -1,0 +1,12 @@
+FROM python:3.13-trixie 
+
+# install deps 
+RUN pip install mlflow psycopg2 boto3
+
+# copy over the startup script 
+RUN mkdir /scripts/ 
+COPY ./startup.sh /scripts/startup.sh 
+RUN chmod u+x /scripts/startup.sh
+
+# start the mlflow server 
+ENTRYPOINT [ "/scripts/startup.sh" ]
