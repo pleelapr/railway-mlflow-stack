@@ -1,17 +1,12 @@
-# MLFlow Stack for Railway
+# Deploy and Host MLFlow on Railway
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/railway-mlflow-stack)
 
-Deploy a complete MLFlow machine learning tracking platform with PostgreSQL backend, MinIO object storage, and Caddy authentication gateway.
+MLFlow is an open-source platform for machine learning experiment tracking, model management, and deployment. This template can be used for anything the MLFlow tracking server supports, following MLFlow's [best deployment practices](https://mlflow.org/docs/latest/ml/tracking/tutorials/remote-server/). For model serving, test locally using their [deployment guide](https://mlflow.org/docs/latest/ml/deployment/deploy-model-locally/) then build and push Docker images to Railway as described in their [Kubernetes deployment docs](https://mlflow.org/docs/latest/ml/deployment/deploy-model-to-kubernetes/#build-docker-for-deployment).
 
-## About MLFlow
+## About Hosting MLFlow
 
-MLFlow is an open-source platform for managing machine learning experiments, models, and deployments. This template provides a production-ready MLFlow deployment with:
-
-- **Experiment Tracking** - Log parameters, metrics, and artifacts for ML experiments
-- **Model Registry** - Version and manage ML models with lifecycle stages
-- **S3-Compatible Storage** - MinIO provides scalable artifact storage
-- **Secure Authentication** - Caddy proxy handles authentication and SSL
+Hosting MLFlow typically requires configuring multiple services: a tracking server, database backend, artifact storage, and authentication layer. This template eliminates setup complexity by providing a one-click deploy solution with everything pre-configured. You get a production-ready MLFlow instance with PostgreSQL backend, S3-compatible MinIO storage, and secure Caddy authentication gateway - all automatically deployed and connected on Railway's infrastructure.
 
 ## Common Use Cases
 
