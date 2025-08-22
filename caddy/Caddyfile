@@ -2,7 +2,7 @@
 	admin off
 }
 
-http://localhost:{$PORT} {
+:{$PORT} {
 	# Import generated basic auth configuration
 	import /etc/caddy/generated/auth.caddy
 
