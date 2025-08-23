@@ -12,7 +12,7 @@ This template provides MLflow preconfigured with:
 - **MinIO** for artifact storage
 - **PostgreSQL** for backend storage
 
-all deployable in a single click on Railway1
+all deployable in a single click on Railway!
 
 Once the services are healthy, configure your local environment with the Railway-generated username and password, and you’re ready to build production-ready ML/AI systems.
 
@@ -40,8 +40,7 @@ The Railway template includes all required dependencies:
 
 ### Deployment Dependencies
 
-The MLflow documentation is crucial for understanding how to best utilize all of the great tooling MLflow can provide. 
-Here are some links to get you started:
+The MLflow documentation is crucial for understanding how to best utilize all of the great tooling MLflow provides. Here are some links to get you started:
 
 - [Getting started with ML](https://MLflow.org/docs/latest/ml/getting-started/): a getting started guide for MLOps on MLflow.
 - [Getting Started with GenAI](https://MLflow.org/docs/latest/genai/getting-started/): a getting started guide for LLMOps on MLflow.
@@ -49,27 +48,37 @@ Here are some links to get you started:
 
 ### Implementation Details
 
-#### Pinning MLflow versions
+#### Quick start guide
 
-Just provide a `MLFLOW_VERSION` environment variable on the MLflow Service to pin a version! by default the template uses **v3.3.1**.
+1. Click "Deploy on Railway" and optionally set a custom username on the caddy service.
+2. Wait 3-5 minutes for deployment, then access your MLflow tracking UI via the auto-generated URL on the caddy service.
+3. Login with your username and the auto-generated password.
+4. Look around in the UI and optionally create some experiments/models for use later.
+5. Setup your local development environment and start using your new MLflow setup!
+
+To make step 4 easier, I've put together [a minimal example of a development environment](https://github.com/MykalMachon/railway-mlflow-stack/tree/main/mlflow-examples) that is tested and validated against this template.
+
+#### Environment variables
+
+The only environment variables you'll want to mess around with are:
+
+| Variable       | Service | Description                     | Default         |
+|----------------|---------|---------------------------------|-----------------|
+| `AUTH_USERNAME` | Caddy   | Your basic authentication username | `admin`         |
+| `AUTH_PASSWORD` | Caddy   | Your basic authentication password | Auto-generated  |
+| `MLFLOW_VERSION` | MLflow   | The version of MLflow you want to deploy | N/A (defaults to v3.3.1)  |
+
+#### Version Control
+
+If you'd like to lock your install to a newer / older version, you can pin the version of MLflow you'd like to deploy by setting an environment variable (`MLFLOW_VERSION`) on the MLflow Service. by default the template uses **v3.3.1**.
 
 #### Authentication via Caddy
 
-MLflow’s built-in authentication features are still experimental.
+MLflow’s built-in authentication features are still experimental and are not recommended for a production environment.
 
-To provide stability, this template uses **Caddy** as a reverse proxy with basic authentication. This follows MLflow’s best practices for production deployments and is fully supported by MLflow’s Python tooling.
+With that in mind, this template uses **Caddy** as a reverse proxy with basic authentication. This follows MLflow’s best practices for production deployments and is fully supported by MLflow’s Python tooling.
 
-To authenticate locally, export your Railway-generated credentials:
-
-```bash
-# set your credentials
-export MLFLOW_TRACKING_URI=https://your-mlflow-deployment.up.railway.app
-export MLFLOW_TRACKING_USERNAME=username
-export MLFLOW_TRACKING_PASSWORD=your-generated-password
-
-# any MLflow code will now pick them up
-python example.py
-```
+For an example of authenticating with this service via MLflow's python SDK [see this example development environmnet](https://github.com/MykalMachon/railway-mlflow-stack/tree/main/mlflow-examples).
 
 #### Extending the default MLflow Dockerfile
 
