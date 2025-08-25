@@ -1,6 +1,7 @@
 from os import getenv
 
 from example_run import example_run
+from openai_example import openai_example
 
 
 def main() -> None:
@@ -21,6 +22,9 @@ def main() -> None:
 		print("No MLflow tracking credentials set, using local tracking")
 
 	example_run(tracking_url)
+	
+	# Run OpenAI example if API key is available
+	openai_example(tracking_url)
 
 
 if __name__ == "__main__":
