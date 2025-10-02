@@ -6,7 +6,7 @@ RUN pip install psycopg2-binary boto3
 
 # copy over the startup script 
 RUN mkdir /scripts/ 
-COPY ./startup.sh /scripts/startup.sh 
+COPY ./mlflow/startup.sh /scripts/startup.sh 
 RUN chmod u+x /scripts/startup.sh
 
 # start the mlflow server 
