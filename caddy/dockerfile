@@ -5,7 +5,7 @@ RUN apk add --no-cache apache2-utils
 
 # Copy configuration files
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY /caddy/startup.sh /scripts/startup.sh
+COPY ./caddy/startup.sh /scripts/startup.sh
 
 # Make startup script executable
 RUN chmod +x /scripts/startup.sh
