@@ -1,8 +1,11 @@
 ARG MLFLOW_VERSION=v3.9.0
 FROM ghcr.io/mlflow/mlflow:${MLFLOW_VERSION}
 
-# install deps 
+# install deps
 RUN pip install psycopg2-binary boto3
+
+# Limit OpenBLAS threads to prevent resource exhaustion in containers
+ENV OPENBLAS_NUM_THREADS=1
 
 # copy over the startup script 
 RUN mkdir /scripts/ 
