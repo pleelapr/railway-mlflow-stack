@@ -16,7 +16,7 @@
 		# Proxy all authenticated requests to MLFlow
 		reverse_proxy {$MLFLOW_URL} {
 			# Preserve original headers
-			header_up Host {upstream_hostport}
+			header_up Host {host}
 			header_up X-Forwarded-Proto https
 		}
 	}
