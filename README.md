@@ -9,7 +9,7 @@ MLflow is the open-source standard for managing the machine learning lifecycle. 
 This template provides MLflow preconfigured with:
 
 - **Caddy** for authentication and reverse proxying
-- **MinIO** for artifact storage
+- **Railway Bucket** (S3-compatible object storage) for artifact storage
 - **PostgreSQL** for backend storage
 
 all deployable in a single click on Railway!
@@ -23,7 +23,7 @@ This template is based on MLflow’s guide for [Remote Experiment Tracking with 
 This template enables a comprehensive set of MLOps usecases:
 
 - **Track and compare experiments**: Log parameters, metrics, and outputs from every training run. Quickly compare results to see which models perform best and why.
-- **Centralized artifact storage**: Store models, plots, logs, and other outputs in MinIO, making them easy to retrieve, share, and keep organized.
+- **Centralized artifact storage**: Store models, plots, logs, and other outputs in a Railway Bucket (S3-compatible object storage), making them easy to retrieve, share, and keep organized.
 - **Manage model lifecycles**: Use the model registry to version, annotate, and promote models from experimentation through staging and into production.
 - **Keep data reproducible**: Record dataset versions or URIs so you always know exactly which data was used to train a model—even if the raw data itself lives elsewhere.
 - **Package models for reuse**: Automatically capture dependencies and package models into portable formats like Docker images or Conda environments, ensuring consistent results everywhere.
@@ -36,7 +36,7 @@ The Railway template includes all required dependencies:
 - a Caddy HTTP Gateway / Reverse proxy that provides authentication and HTTP logging.
 - an MLflow "tracking" server that acts as a primary API connects everything together.
 - a PostgreSQL database which acts as an MLflow Backend Store.
-- a MinIO S3 compatible file store which acts as an MLflow Artifact Store.
+- a Railway Bucket (S3-compatible object storage, Tigris-backed) which acts as the MLflow Artifact Store. MLflow serves artifacts through the tracking server via proxied access (`mlflow-artifacts:/`), so clients never touch the bucket directly. (Local development still uses MinIO via `docker-compose`, since Railway Buckets only exist on Railway.)
 
 ### Deployment Dependencies
 
@@ -66,11 +66,14 @@ The only environment variables you'll want to mess around with are:
 |----------------|---------|---------------------------------|-----------------|
 | `AUTH_USERNAME` | Caddy   | Your basic authentication username | `admin`         |
 | `AUTH_PASSWORD` | Caddy   | Your basic authentication password | Auto-generated  |
-| `MLFLOW_VERSION` | MLflow   | The version of MLflow you want to deploy | N/A (defaults to v3.3.1)  |
+| `MLFLOW_VERSION` | MLflow   | The version of MLflow you want to deploy | `v3.14.0` (set in `mlflow/dockerfile`) |
+| `ARTIFACT_DESTINATION` | MLflow | Artifact store URI passed to `--artifacts-destination` | `s3://bucket` (set to your `s3://<railway-bucket-name>`) |
+| `MLFLOW_S3_ENDPOINT_URL` | MLflow | S3 endpoint for the artifact store | Railway Bucket endpoint (e.g. `https://t3.storageapi.dev`) |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | MLflow | S3 credentials for the Railway Bucket | From `railway bucket credentials` |
 
 #### Version Control
 
-If you'd like to lock your install to a newer / older version, you can pin the version of MLflow you'd like to deploy by setting an environment variable (`MLFLOW_VERSION`) on the MLflow Service. by default the template uses **v3.3.1**.
+If you'd like to lock your install to a newer / older version, you can pin the version of MLflow you'd like to deploy by setting an environment variable (`MLFLOW_VERSION`) on the MLflow Service, which overrides the `ARG MLFLOW_VERSION` default in `mlflow/dockerfile`. This deployment currently runs **v3.14.0**. The MLflow database schema migration runs automatically on every boot via `startup.sh` (`mlflow db upgrade`) — per [MLflow's upgrade guidance](https://mlflow.org/docs/latest/self-hosting/migration/), take a database backup before upgrading, as migrations are not guaranteed to be transactional.
 
 #### Authentication via Caddy
 

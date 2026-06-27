@@ -16,9 +16,12 @@ services:
       timeout: 5s
       retries: 5
 
-  minio: 
-    build: 
-      context: ./minio 
+  # Local-development artifact store only. On Railway this is replaced by a
+  # Railway Bucket (S3-compatible); see README. The mlflow service points at
+  # this MinIO locally via the default ARTIFACT_DESTINATION (s3://bucket).
+  minio:
+    build:
+      context: ./minio
       dockerfile: dockerfile
     restart: unless-stopped
     ports:
